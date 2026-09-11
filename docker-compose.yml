@@ -1,0 +1,16 @@
+services:
+  dsh:
+    # admin variant: preinstalled latest DSH + git/pnpm/uv for plugins
+    image: ghcr.io/smanx/deepseek-harness:admin-latest
+    restart: unless-stopped
+    environment:
+      - PROXY_USERNAME=${PROXY_USERNAME:-}
+      - PROXY_PASSWORD=${PROXY_PASSWORD:-}
+      - NPM_CONFIG_REGISTRY=${NPM_CONFIG_REGISTRY:-https://registry.npmjs.org/}
+    volumes:
+      - dsh-data:/root/.dsh      # sessions & config
+      - dsh-install:/opt/dsh     # DSH install (admin variant)
+
+volumes:
+  dsh-data:
+  dsh-install:
