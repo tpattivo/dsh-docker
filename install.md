@@ -50,8 +50,13 @@ If you have Coolify through Cloudflare Tunnel (using [this guide](https://coolif
 
 Hit **Deploy**. Verify in logs that DSH and the proxy start, then open the domain — you'll get the DSH Web UI. Add your API key in Settings → Models.
 
-## Git workflows you get for free
-
-Because it's a Git-based application, Coolify supports auto-deploy webhooks: push to your branch (e.g., editing the compose file or bumping the image tag) and Coolify redeploys automatically. The `admin-latest` variant also lets you switch DSH versions from a built-in management page at `/__admin/` without touching the container.
-
-One caveat: DSH is in developer preview with breaking changes expected, so consider pinning a version tag (e.g., `admin-0.x.x`) instead of `latest` once you have a stable setup.
+### 6. Usage
+- Install skills and plugins needs `Full Access` agent permission
+- Whenever you need to restart dsh:
+  - Since you're on the `admin` variant:
+Open `https://your-domain/__admin/` and use the one-click **restart** there. That's the intended management path for the admin image.
+  - Use coolify UI or terminal on the host machine:
+  ```bash
+  docker restart <container-name>
+  ```
+  
