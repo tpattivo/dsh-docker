@@ -1,4 +1,7 @@
-Deploying DeepSeek Harness (`dsh`) on Coolify with Git is a good fit, but there's one gotcha to know upfront: **the official `deepseek-ai/deepseek-harness` repo ships no Dockerfile** — it runs via `npx @deepseek-ai/dsh web` and, for security, DSH refuses `--host 0.0.0.0` (loopback-only). The standard solution is a community image that bundles DSH with a Node reverse proxy that handles external access, WebSocket forwarding, and git for DSH plugins.
+Deploying DeepSeek Harness (`dsh`) on Coolify with Git 
+
+Why this repo?
+**the official `deepseek-ai/deepseek-harness` repo ships no Dockerfile** — it runs via `npx @deepseek-ai/dsh web` and, for security, DSH refuses `--host 0.0.0.0` (loopback-only). 
 
 ## Recommended setup: Git-based Docker Compose app
 
@@ -44,7 +47,7 @@ In **Configuration → Environment Variables**, set `PROXY_USERNAME` / `PROXY_PA
 
 In the service's **Domains** field, enter `https://dsh.yourdomain.com:3080`. The suffix tells Coolify's proxy which container port to route to; visitors use normal 443. Point your DNS A record at your Coolify server.
 
-If you have Coolify through Cloudflare Tunnel (using [this guide](https://coolify.io/docs/integrations/networking/cloudflare/tunnels/all-resource)), use http only, not httpS.
+If you have Coolify through Cloudflare Tunnel (using [this guide](https://coolify.io/docs/integrations/networking/cloudflare/tunnels/all-resource)), use http only, not http*__S__*.
 
 ### 5. Deploy
 
@@ -59,4 +62,12 @@ Open `https://your-domain/__admin/` and use the one-click **restart** there. Tha
   ```bash
   docker restart <container-name>
   ```
-  
+#### Some stuff such as xlsx, docx, pdf agent skill, along with their dependencies can be installed using [install-some-stuff.sh](/install-some-stuff.sh)   
+
+| Category | Packages |
+|---|---|
+| **System (apt)** | tesseract-ocr + eng/osd, ffmpeg, libreoffice (writer/calc/impress), poppler-utils |
+| **Python (pip)** | 30 packages including openpyxl, pdfplumber, mammoth, python-pptx, pandas, pypdf, reportlab, pytesseract, azure-*, etc. |
+| **npm (global)** | `docx`, `@firecrawl/anydoc` |
+| **DSH plugins** | dsh-better-sidebar, dsh-mobile-hanui, dshmarket |
+| **DSH settings** | LLM provider (clinepass), agent default model, API key config |
