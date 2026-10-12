@@ -1,9 +1,6 @@
 services:
   dsh:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: dsh-custom:latest
+    image: ghcr.io/tpattivo/dsh-docker:latest
     restart: unless-stopped
     environment:
       - PROXY_USERNAME=${PROXY_USERNAME:-}

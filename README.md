@@ -12,10 +12,7 @@ Fork [smanx/deepseek-harness-docker](https://github.com/smanx/deepseek-harness-d
 ```yaml
 services:
   dsh:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: dsh-custom:latest
+    image: ghcr.io/tpattivo/dsh-docker:latest
     restart: unless-stopped
     environment:
       - PROXY_USERNAME=${PROXY_USERNAME:-}
@@ -65,7 +62,11 @@ Open `https://your-domain/__admin/` and use the one-click **restart** there. Tha
   docker restart <container-name>
   ```
 #### Pre-baked dependencies & custom plugins
-The [Dockerfile](/Dockerfile) automatically bakes the system (apt), Python (pip), and npm packages directly into the container image upon deployment, so you don't need to reinstall them every redeploy.
+The custom Docker image is automatically built and pushed to **GitHub Container Registry (`ghcr.io/tpattivo/dsh-docker:latest`)** via GitHub Actions on every push to `main`.
+
+This bakes all system (apt), Python (pip), and npm packages directly into the image:
+- **Instant Coolify deployments**: Coolify just pulls the pre-built image in seconds without compiling or downloading packages on your VPS.
+- **100% Consistent**: All Python tools and system binaries are guaranteed to be present on every redeployment.
 
 For DSH web profile plugins (`dsh-better-sidebar`, `dshmarket`, etc.) and LLM provider configuration, you can run [install-some-stuff.sh](/install-some-stuff.sh) once inside the container (they persist in the `dsh-data` volume).
 
