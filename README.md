@@ -12,8 +12,10 @@ Fork [smanx/deepseek-harness-docker](https://github.com/smanx/deepseek-harness-d
 ```yaml
 services:
   dsh:
-    # admin variant: preinstalled latest DSH + git/pnpm/uv for plugins
-    image: ghcr.io/smanx/deepseek-harness:admin-latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: dsh-custom:latest
     restart: unless-stopped
     environment:
       - PROXY_USERNAME=${PROXY_USERNAME:-}
@@ -62,12 +64,15 @@ Open `https://your-domain/__admin/` and use the one-click **restart** there. Tha
   ```bash
   docker restart <container-name>
   ```
-#### Some stuff such as xlsx, docx, pdf agent skill, along with their dependencies can be installed using [install-some-stuff.sh](/install-some-stuff.sh)   
+#### Pre-baked dependencies & custom plugins
+The [Dockerfile](/Dockerfile) automatically bakes the system (apt), Python (pip), and npm packages directly into the container image upon deployment, so you don't need to reinstall them every redeploy.
 
-| Category | Packages |
-|---|---|
-| **System (apt)** | tesseract-ocr + eng/osd, ffmpeg, libreoffice (writer/calc/impress), poppler-utils |
-| **Python (pip)** | 30 packages including openpyxl, pdfplumber, mammoth, python-pptx, pandas, pypdf, reportlab, pytesseract, azure-*, etc. |
-| **npm (global)** | `docx`, `@firecrawl/anydoc` |
-| **DSH plugins** | dsh-better-sidebar, dsh-mobile-hanui, dshmarket |
-| **DSH settings** | LLM provider (clinepass), agent default model, API key config |
+For DSH web profile plugins (`dsh-better-sidebar`, `dshmarket`, etc.) and LLM provider configuration, you can run [install-some-stuff.sh](/install-some-stuff.sh) once inside the container (they persist in the `dsh-data` volume).
+
+| Category | Packages | Baked in Dockerfile? |
+|---|---|---|
+| **System (apt)** | tesseract-ocr + eng/osd, ffmpeg, libreoffice (writer/calc/impress), poppler-utils | ✅ Yes |
+| **Python (pip)** | 30 packages including openpyxl, pdfplumber, mammoth, python-pptx, pandas, pypdf, reportlab, pytesseract, azure-*, etc. | ✅ Yes |
+| **npm (global)** | `docx`, `@firecrawl/anydoc` | ✅ Yes |
+| **DSH plugins** | dsh-better-sidebar, dsh-mobile-hanui, dshmarket | Persists in `dsh-data` volume |
+| **DSH settings** | LLM provider, agent default model, API key config | Persists in `dsh-data` volume |

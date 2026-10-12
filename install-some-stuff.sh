@@ -174,39 +174,11 @@ header "DSH Settings"
 DSH_HOME="${HOME}/.dsh"
 SETTINGS_FILE="${DSH_HOME}/settings.yaml"
 
-# Backup existing settings if present
 if [ -f "$SETTINGS_FILE" ]; then
-    cp "$SETTINGS_FILE" "${SETTINGS_FILE}.bak.$(date +%s)" 2>/dev/null || true
-    log "Backed up existing settings.yaml"
+    log "settings.yaml already exists, keeping your current model provider settings."
+else
+    log "No existing settings.yaml found. You can configure your provider via Settings → Models in the Web UI."
 fi
-
-# Write settings.yaml
-cat > "$SETTINGS_FILE" << 'SETTINGS_EOF'
-ui-onboarding:
-  welcomeNoticeVersion: 2026-08-13.1
-llm-pi-ai:
-  providers:
-    clinepass:
-      apiKeyEnv: CLINEPASS_API_KEY
-      api: openai-completions
-      baseURL: https://api.cline.bot/api/v1/
-      models:
-        - id: cline-pass/mimo-v2.5
-          name: mimo2.5
-          contextWindow: 1000000
-          maxTokens: 131000
-        - id: cline-pass/deepseek-v4.1-flash
-          name: D4.1F
-          contextWindow: 1000000
-          maxTokens: 512000
-agent-default-model:
-  provider: clinepass
-  model: cline-pass/mimo-v2.5
-SETTINGS_EOF
-
-log "Written settings.yaml"
-warn "NOTE: You still need to set CLINEPASS_API_KEY via environment variable or credentials."
-warn "  Add to docker-compose.yml: CLINEPASS_API_KEY=sk_your_key_here"
 
 # ---------------------------------------------------------------------------
 # 5. DSH web profile packages (market plugins)
@@ -309,8 +281,6 @@ fi
 
 echo ""
 log "Next steps:"
-echo "  1. Set your CLINEPASS_API_KEY if not already configured:"
-echo "     docker exec -it <container> dsh credential set CLINEPASS_API_KEY sk_your_key"
-echo "  2. Restart the DSH service to load new plugins."
-echo "  3. Access the web UI and verify everything works."
+echo "  1. Restart the DSH service or container to load new plugins."
+echo "  2. Access the web UI and configure your model provider in Settings → Models if not done already."
 echo ""
