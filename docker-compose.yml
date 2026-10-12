@@ -9,6 +9,7 @@ services:
     volumes:
       - dsh-data:/root/.dsh      # sessions & config
       - dsh-install:/opt/dsh     # DSH install (admin variant)
+      - ./my-dsh-config:/opt/dsh-config:ro  # custom presets & bundles
 
 volumes:
   dsh-data:

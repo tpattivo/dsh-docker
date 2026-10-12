@@ -77,3 +77,24 @@ For DSH web profile plugins (`dsh-better-sidebar`, `dshmarket`, etc.) and LLM pr
 | **npm (global)** | `docx`, `@firecrawl/anydoc` | ✅ Yes |
 | **DSH plugins** | dsh-better-sidebar, dsh-mobile-hanui, dshmarket | Persists in `dsh-data` volume |
 | **DSH settings** | LLM provider, agent default model, API key config | Persists in `dsh-data` volume |
+| **Custom Presets** | e.g. `hr-mode` (`my-dsh-config/presets/hr-mode`) | Mounted via volume & installed into `dsh-data` |
+
+#### Custom Agent Presets (e.g. `hr-mode`)
+Custom agent presets live in `my-dsh-config/presets/<preset-name>` (mounted read-only at `/opt/dsh-config` in `docker-compose.yml`). They are not baked into the Docker image, allowing you to update them anytime without rebuilding.
+
+To install or re-register a preset manually after container deployment:
+```bash
+# Option 1: Run the helper script inside container
+docker exec -it <container-name> bash /opt/dsh-config/install-preset.sh hr-mode
+
+# Option 2: Directly register with DSH CLI
+docker exec -it <container-name> dsh plugin --profile web add -w /opt/dsh-config/presets/hr-mode
+```
+
+Then restart DSH:
+- In Web Admin: `https://your-domain/__admin/` → click **Restart**
+- Or on host: `docker restart <container-name>`
+
+In Telegram:
+- Switch preset: `/preset hr-mode`
+- Start fresh session: `/new`

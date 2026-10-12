@@ -226,6 +226,17 @@ PKGJSON_EOF
         npm install 2>/dev/null && log "npm install completed" || warn "npm install had issues"
     fi
     cd /
+
+    # Check and install custom agent presets (e.g. HR-mode) if found
+    if [ -d "/root/.dsh/presets/hr-mode" ]; then
+        log "Registering persistent HR-mode preset..."
+        dsh plugin --profile web add -w "/root/.dsh/presets/hr-mode" 2>/dev/null || warn "Failed to register hr-mode preset"
+    elif [ -d "/opt/dsh-config/presets/hr-mode" ]; then
+        log "Syncing and registering HR-mode preset from /opt/dsh-config..."
+        mkdir -p "/root/.dsh/presets"
+        cp -r "/opt/dsh-config/presets/hr-mode" "/root/.dsh/presets/"
+        dsh plugin --profile web add -w "/root/.dsh/presets/hr-mode" 2>/dev/null || warn "Failed to register hr-mode preset"
+    fi
 else
     warn "Web profile directory not found at ${WEB_PROFILE}"
 fi
