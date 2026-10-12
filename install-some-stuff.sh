@@ -57,6 +57,9 @@ if command -v apt-get &>/dev/null; then
     apt-get update -qq 2>/dev/null || warn "apt update had warnings"
 
     SYSTEM_PACKAGES=(
+        python3
+        python3-pip
+        python-is-python3
         tesseract-ocr
         tesseract-ocr-eng
         tesseract-ocr-osd

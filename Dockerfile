@@ -3,6 +3,9 @@ FROM ghcr.io/smanx/deepseek-harness:admin-latest
 # Install system dependencies (apt)
 RUN apt-get update -qq && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
+        python3 \
+        python3-pip \
+        python-is-python3 \
         tesseract-ocr \
         tesseract-ocr-eng \
         tesseract-ocr-osd \
