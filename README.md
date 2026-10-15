@@ -54,13 +54,27 @@ Hit **Deploy**. Verify in logs that DSH and the proxy start, then open the domai
 
 ### 6. Usage
 - Install skills and plugins needs `Full Access` agent permission
-- Whenever you need to restart dsh:
-  - Since you're on the `admin` variant:
-Open `https://your-domain/__admin/` and use the one-click **restart** there. That's the intended management path for the admin image.
-  - Use coolify UI or terminal on the host machine:
+- Whenever you need to restart dsh, prefer a **full container restart** (Coolify UI → Restart, or on the host machine):
   ```bash
   docker restart <container-name>
   ```
+  The `/__admin/` one-click **restart** only restarts the `dsh` process *inside* the container — that invalidates your browser session and is what used to trigger the "authentication required" lockout (see troubleshooting below). The patched proxy in this image now auto-recovers from it, but a container restart remains the reliable path.
+
+#### Troubleshooting: "dsh web authentication required; reopen the URL printed by dsh web"
+
+Since DSH 0.1.2, the Web UI is secured by a one-time **launch token** that the browser exchanges for a signed session cookie. Anything that restarts the `dsh` process inside the container (admin-page restart, plugin install, crash respawn) invalidates that cookie and prints a new token. The stock proxy only ever read the *first* token from the log, so after such a restart its cached token was stale and you got locked out.
+
+This image patches `proxy/upstream-token.js` to re-scan the DSH log for the newest token and retry automatically, so the page should heal itself on reload. If you still hit the error:
+
+1. **Full container restart** — fixes it every time: Coolify UI → Restart, or `docker restart <container-name>`.
+2. **Or open the fresh token URL manually** — grab the newest token from the log and append it to your domain:
+   ```bash
+   docker exec <container-name> grep -oE 'token=[A-Za-z0-9._~-]{16,}' /app/.dsh-web.log | tail -1
+   # → https://your-domain/?token=<value>
+   ```
+
+If it keeps recurring even after a container restart, check the container logs for `[upstream-token]` lines and re-diff `patches/upstream-token.js` against the base image's copy — upstream may have changed the token format.
+
 #### Pre-baked dependencies & custom plugins
 The custom Docker image is automatically built and pushed to **GitHub Container Registry (`ghcr.io/tpattivo/dsh-docker:latest`)** via GitHub Actions on every push to `main`.
 

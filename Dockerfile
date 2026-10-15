@@ -57,3 +57,10 @@ RUN pip3 install --no-cache-dir --break-system-packages \
 RUN npm install -g --loglevel=warn \
         docx \
         @firecrawl/anydoc
+
+# Patched proxy: re-scans the DSH log for a fresh launch token when the cached
+# one is rejected with 401 (stale after an in-container `dsh` restart), instead
+# of giving up and locking the browser out. Kept last so editing the patch does
+# not invalidate the expensive package-install cache layers above.
+# See patches/upstream-token.js.
+COPY patches/upstream-token.js /app/proxy/upstream-token.js
